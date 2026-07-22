@@ -393,20 +393,15 @@ uv run python -m laozhang_cli --input examples/ppt.json
 uv run python -m laozhang_cli --input examples/ppt-gpt.json
 ```
 
-### 并发生成 4 张图片
+### Codex skill：并发生成 4 张图片
 
-可由外部脚本并发启动 4 个 CLI 进程；每个进程使用独立输入 JSON，输出中的 `elapsed_seconds` 可用于统计单次耗时，总墙钟时间由调用方记录：
+使用仓库内的纯 Python skill 安装器和编排器；默认模型为 `nano-banana-2)，默认并发上限为 4：
 
-```powershell
-$jobs = 1..4 | ForEach-Object {
-  Start-Job -ScriptBlock {
-    param($inputPath)
-    uv run python -m laozhang_cli --input $inputPath
-  } -ArgumentList "C:\tmp\ppt-gpt-image-2-$_.json"
-}
-$jobs | Wait-Job | Out-Null
-$jobs | Receive-Job
-$jobs | Remove-Job
+```text
+python .codex/skills/generating-images-with-laozhang-cli/scripts/install.py --cli-root .
+python .codex/skills/generating-images-with-laozhang-cli/scripts/generate.py --request request.json --count 4 --concurrency 4 --output-dir output
 ```
+
+skill 会汇总每个独立 CLI 进程的 JSON 结果，逐张检查图片并报告中文乱码；不会自动重试。Windows、macOS 和 Linux 均使用 Python 文件/进程 API，不依赖 PowerShell、Bash 或 WSL。
 
 所有示例都要求项目根目录存在 `.env`，并配置有效的 `LAOZHANG_KEY`。不要将真实 key 写入 JSON、示例文件或日志。
