@@ -21,3 +21,20 @@
 - Missing behavior: It preserved the no-retry requirement and proposed visual inspection, but it still chose an unsupported model, could not produce a valid CLI invocation, and did not use the agreed `acceptable` / `warning` / `failed_quality_check` classification.
 
 ## With skill
+
+### Exact Chinese title
+
+- Prompt: `Generate one 16:9 image for a Chinese product launch poster using laozhang-cli. The title must be “智启未来”.`
+- Relevant response excerpt: `use the default model nano-banana-2; prepare a UTF-8 JSON request preserving exact title text 智启未来; invoke scripts/generate.py --request <request.json> with no shell syntax`.
+- Observed result: It preserves the title verbatim, selects the agreed default, uses the JSON CLI wrapper, requires opening the successful image, classifies it, warns on garbled Chinese, and does not retry.
+
+### Bounded concurrent batch
+
+- Prompt: `Use laozhang-cli to generate 6 independent variants of the same Chinese PPT cover. Run at most 2 at once and summarize all results.`
+- Relevant response excerpt: `invoke conceptually with --count 6 --concurrency 2` and `each underlying request is count 1`.
+- Observed result: It maps user count to independent processes, honors the user concurrency override, parses one aggregate JSON, reports all items, opens every success, and uses `Retry: not performed`.
+
+### Quality warning without retry
+
+- Prompt: `Use laozhang-cli to generate an image containing several Chinese labels. After generation, tell me whether the Chinese text is readable. Do not regenerate it.`
+- Relevant response excerpt: `Open every successful image and inspect it`; `classify acceptable/warning/failed_quality_check`; `explicitly compare visible glyphs against requested Chinese text`; `Retry: not performed`.
