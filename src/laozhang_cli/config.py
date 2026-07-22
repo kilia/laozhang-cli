@@ -1,5 +1,8 @@
 import os
 from dataclasses import dataclass
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 from .errors import ApiError
 
@@ -9,7 +12,8 @@ class Settings:
     api_key: str
 
     @classmethod
-    def from_environment(cls) -> "Settings":
+    def from_environment(cls, env_file: Path | None = None) -> "Settings":
+        load_dotenv(dotenv_path=env_file or Path.cwd() / ".env", override=False)
         api_key = os.getenv("LAOZHANG_KEY", "")
         if not api_key:
             raise ApiError("LAOZHANG_KEY is not configured")
