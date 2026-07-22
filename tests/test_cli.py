@@ -26,7 +26,10 @@ def _write_valid_request(source: Path) -> None:
 
 def _assert_single_json_output(output: str) -> dict[str, object]:
     assert output.count("\n") == 1
-    return json.loads(output)
+    payload = json.loads(output)
+    elapsed = payload.pop("elapsed_seconds")
+    assert isinstance(elapsed, (int, float)) and elapsed >= 0
+    return payload
 
 
 def test_cli_emits_json_for_invalid_input(tmp_path: Path, capsys) -> None:

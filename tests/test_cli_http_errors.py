@@ -48,7 +48,10 @@ def test_cli_preserves_http_status_for_domain_errors(
 
     assert main(["--input", str(source)]) == exit_code
     captured = capsys.readouterr()
-    assert json.loads(captured.out) == {
+    payload = json.loads(captured.out)
+    elapsed = payload.pop("elapsed_seconds")
+    assert isinstance(elapsed, (int, float)) and elapsed >= 0
+    assert payload == {
         "success": False,
         "http_status": http_status,
         "message": str(error),
