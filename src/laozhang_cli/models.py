@@ -121,6 +121,7 @@ class GenerationResult:
     http_status: int | None
     message: str
     images: list[OutputImage]
+    elapsed_seconds: float | None = None
 
 
 def _parse_prompt(
