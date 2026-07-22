@@ -173,3 +173,19 @@ output/futuristic-city-02.webp
 ## License
 
 项目暂未指定开源许可证。在添加许可证文件前，默认保留所有权利。
+
+## API Key 配置
+
+CLI 所需的 Key 存放在项目根目录的 `.env` 文件中：
+
+```dotenv
+LAOZHANG_KEY=your-real-api-key
+```
+
+复制示例文件并填写真实 Key：
+
+```bash
+cp .env.sample .env
+```
+
+`.env` 已加入 `.gitignore`，请勿提交包含真实 Key 的配置文件。`.env.sample` 仅用于说明所需的环境变量，不应包含任何有效凭据。
