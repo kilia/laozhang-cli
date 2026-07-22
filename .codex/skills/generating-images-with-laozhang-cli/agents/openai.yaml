@@ -1,0 +1,4 @@
+interface:
+  display_name: "Generate Images with Laozhang CLI"
+  short_description: "Generate and inspect images through laozhang-cli"
+  default_prompt: "Use $generating-images-with-laozhang-cli to generate and inspect an image from my description."
