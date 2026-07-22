@@ -21,14 +21,15 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | :---: | --- | --- |
 | `model` | string | 是 | — | api.laozhang.ai 支持的文生图模型名称 |
-| `prompt` | string | 是 | — | 图片生成提示词 |
-| `negative_prompt` | string | 否 | `null` | 负面提示词；不支持的模型将忽略该项 |
+| `system_prompt` | string \| object | 是 | — | 定义生图角色、视觉风格和通用规则；支持内联文本或外部文件引用 |
+| `prompt` | string \| object | 是 | — | 指定当前图片的具体内容；支持内联文本或外部文件引用 |
+| `negative_prompt` | string \| object \| null | 否 | `null` | 指定不希望出现的内容；支持内联文本或外部文件引用，不支持该能力的模型将忽略此项 |
 | `resolution` | string | 否 | `"2K"` | 统一分辨率描述，如 `"1K"`、`"2K"`、`"4K"` |
-| `aspect_ratio` | string | 否 | `"1:1"` | 统一画面比例，如 `"1:1"`、`"4:3"`、`"3:2"`、`"16:9"`、`"9:16"` |
+| `aspect_ratio` | string | 否 | `"16:9"` | 统一画面比例，如 `"1:1"`、`"4:3"`、`"3:2"`、`"16:9"`、`"9:16"` |
 | `count` | integer | 否 | `1` | 生成图片数量，实际可用范围由模型决定 |
 | `filename` | string | 否 | 当前时间戳 | 输出文件名，不含目录和扩展名 |
 | `output_dir` | string | 否 | `"output"` | 图片输出目录 |
-| `convert_to_webp` | boolean | 否 | `false` | 是否将非 WebP 返回图片转换为 WebP |
+| `convert_to_webp` | boolean | 否 | `true` | 是否将非 WebP 返回图片转换为 WebP；默认启用 |
 
 以下上游差异不作为公共输入参数：
 
@@ -40,13 +41,32 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
 
 ## 输入 JSON
 
+三个提示词参数都接受以下两种形式：
+
+```json
+"直接填写的提示词"
+```
+
+或者引用 UTF-8 编码的外部文本文件（通常使用 `.md` 文件）：
+
+```json
+{ "file": "prompts/style.md" }
+```
+
+文件路径相对于输入 JSON 文件所在目录解析。文件引用适合复用角色、风格和负面约束，避免在多个任务中重复输入相同内容。文件内容读取后与内联字符串等价；一个字段不能同时使用内联文本和文件引用。
+
 示例 `request.json`：
 
 ```json
 {
   "model": "your-image-model",
-  "prompt": "A cinematic photograph of a futuristic city at sunrise",
-  "negative_prompt": "blurry, low quality, watermark",
+  "system_prompt": {
+    "file": "prompts/cinematic-style.md"
+  },
+  "prompt": "A futuristic city at sunrise, viewed from above",
+  "negative_prompt": {
+    "file": "prompts/negative.md"
+  },
   "resolution": "4K",
   "aspect_ratio": "16:9",
   "count": 1,
@@ -63,11 +83,33 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "additionalProperties": false,
-  "required": ["model", "prompt"],
+  "$defs": {
+    "promptValue": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["file"],
+          "properties": {
+            "file": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    }
+  },
+  "required": ["model", "system_prompt", "prompt"],
   "properties": {
     "model": { "type": "string", "minLength": 1 },
-    "prompt": { "type": "string", "minLength": 1 },
-    "negative_prompt": { "type": ["string", "null"] },
+    "system_prompt": { "$ref": "#/$defs/promptValue" },
+    "prompt": { "$ref": "#/$defs/promptValue" },
+    "negative_prompt": {
+      "oneOf": [
+        { "$ref": "#/$defs/promptValue" },
+        { "type": "null" }
+      ],
+      "default": null
+    },
     "resolution": {
       "type": "string",
       "enum": ["1K", "2K", "4K"],
@@ -76,7 +118,7 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
     "aspect_ratio": {
       "type": "string",
       "enum": ["1:1", "4:3", "3:2", "16:9", "9:16"],
-      "default": "1:1"
+      "default": "16:9"
     },
     "count": { "type": "integer", "minimum": 1, "default": 1 },
     "filename": {
@@ -85,19 +127,41 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
       "pattern": "^[^\\\\/:*?\"<>|]+$"
     },
     "output_dir": { "type": "string", "minLength": 1, "default": "output" },
-    "convert_to_webp": { "type": "boolean", "default": false }
+    "convert_to_webp": { "type": "boolean", "default": true }
   }
 }
 ```
 
-API Key 等敏感信息不应写入任务 JSON。实现时建议通过环境变量（例如 `LAOZHANG_API_KEY`）读取。
+API Key 等敏感信息不应写入任务 JSON，统一从项目根目录的 `.env` 文件读取。
+
+## Python 环境与依赖
+
+项目默认使用 [uv](https://docs.astral.sh/uv/) 管理 Python 版本、虚拟环境、项目依赖和锁文件。依赖声明保存在 `pyproject.toml`，解析后的精确版本保存在 `uv.lock`；`uv.lock` 应提交到版本控制，以保证不同环境中的安装结果可复现。
+
+首次获取项目后同步环境：
+
+```bash
+uv sync
+```
+
+新增运行时依赖时使用 `uv add`，不要直接修改项目虚拟环境：
+
+```bash
+uv add Pillow
+```
+
+运行 CLI 时使用 `uv run`。该命令会在执行前检查锁文件和项目环境是否与 `pyproject.toml` 同步：
+
+```bash
+uv run python -m laozhang_cli --input request.json
+```
 
 ## CLI 用法
 
 规划中的调用方式：
 
 ```bash
-python -m laozhang_cli --input request.json
+uv run python -m laozhang_cli --input request.json
 ```
 
 标准输出只写入结果 JSON；运行日志和诊断信息应写入标准错误流，以便调用方可靠解析结果。
@@ -151,6 +215,26 @@ output/futuristic-city-02.webp
 ```
 
 ## WebP 转换
+
+项目使用 [Pillow](https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html#webp) 处理图片读取和 WebP 编码。Pillow 官方支持读写 WebP，并通过底层 `libwebp` 完成编码；通过 uv 安装即可：
+
+```bash
+uv add Pillow
+```
+
+高质量有损 WebP 转换采用以下参数：
+
+```python
+from PIL import Image
+
+with Image.open(source_path) as image:
+    image.save(target_path, "WEBP", quality=80, method=6)
+```
+
+- `quality=80`：项目约定的有损压缩质量；这也是 Pillow 的 WebP 默认质量。
+- `method=6`：使用 Pillow 支持的最高编码工作量，以较慢的编码速度换取更好的压缩效果。
+- 不传入新的尺寸，保持原图像素宽高不变。
+- 带透明通道的图片保留透明度；如需保留完全透明像素下隐藏的 RGB 值，可额外使用 `exact=True`。
 
 当 `convert_to_webp` 为 `true` 时：
 
