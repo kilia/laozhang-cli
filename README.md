@@ -355,3 +355,58 @@ cp .env.sample .env
 ```
 
 `.env` 已加入 `.gitignore`，请勿提交包含真实 Key 的配置文件。`.env.sample` 仅用于说明所需的环境变量，不应包含任何有效凭据。
+## 示例调用
+
+### Nano Banana 2：直接使用内联 system prompt
+
+`examples/ppt.json` 使用 `nano-banana-2`，分辨率为 `2K`、画面比例为 `16:9`：
+
+```bash
+uv run python -m laozhang_cli --input examples/ppt.json
+```
+
+成功时，命令输出包含生成耗时和本地图片路径：
+
+```json
+{
+  "success": true,
+  "http_status": 200,
+  "message": "Image generated successfully",
+  "elapsed_seconds": 17.985,
+  "images": [
+    {"path": "output/20260722_172125.webp", "format": "webp"}
+  ]
+}
+```
+
+### GPT Image 2：从外部文件引用 system prompt
+
+`examples/ppt-gpt.json` 将 system prompt 独立保存于 `examples/prompts/ppt-gpt-system.md`，JSON 中使用相对路径引用：
+
+```json
+"system_prompt": {"file": "prompts/ppt-gpt-system.md"}
+```
+
+运行示例：
+
+```bash
+uv run python -m laozhang_cli --input examples/ppt-gpt.json
+```
+
+### 并发生成 4 张图片
+
+可由外部脚本并发启动 4 个 CLI 进程；每个进程使用独立输入 JSON，输出中的 `elapsed_seconds` 可用于统计单次耗时，总墙钟时间由调用方记录：
+
+```powershell
+$jobs = 1..4 | ForEach-Object {
+  Start-Job -ScriptBlock {
+    param($inputPath)
+    uv run python -m laozhang_cli --input $inputPath
+  } -ArgumentList "C:\tmp\ppt-gpt-image-2-$_.json"
+}
+$jobs | Wait-Job | Out-Null
+$jobs | Receive-Job
+$jobs | Remove-Job
+```
+
+所有示例都要求项目根目录存在 `.env`，并配置有效的 `LAOZHANG_KEY`。不要将真实 key 写入 JSON、示例文件或日志。
