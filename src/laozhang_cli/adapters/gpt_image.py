@@ -10,6 +10,7 @@ from laozhang_cli.services.storage import ImageStorage
 from .http import compose_prompt, decode_base64, download_image, post_json
 
 _ENDPOINT = "https://api.laozhang.ai/v1/images/generations"
+_TIMEOUT_SECONDS = 300.0
 _SIZES = {
     ("1K", "16:9"): "1024x576",
     ("1K", "4:3"): "1024x768",
@@ -42,7 +43,7 @@ class GptImageAdapter:
 
     def generate(self, request: GenerationRequest) -> GenerationResult:
         settings = self._settings or Settings.from_environment()
-        client = self._client or httpx.Client(timeout=120.0)
+        client = self._client or httpx.Client(timeout=_TIMEOUT_SECONDS)
         payload: dict[str, Any] = {
             "model": "gpt-image-2-vip",
             "prompt": compose_prompt(request),
