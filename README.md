@@ -25,7 +25,7 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
 | `prompt` | string \| object | 是 | — | 指定当前图片的具体内容；支持内联文本或外部文件引用 |
 | `negative_prompt` | string \| object \| null | 否 | `null` | 指定不希望出现的内容；支持内联文本或外部文件引用，不支持该能力的模型将忽略此项 |
 | `resolution` | string | 否 | `"2K"` | 统一分辨率描述，如 `"1K"`、`"2K"`、`"4K"` |
-| `aspect_ratio` | string | 否 | `"16:9"` | 统一画面比例，如 `"1:1"`、`"4:3"`、`"3:2"`、`"16:9"`、`"9:16"` |
+| `aspect_ratio` | string | 否 | `"16:9"` | 统一画面比例，如 `"1:1"`、`"4:3"`、`"3:4"`、`"16:9"`、`"9:16"` |
 | `count` | integer | 否 | `1` | 生成图片数量，实际可用范围由模型决定 |
 | `filename` | string | 否 | 当前时间戳 | 输出文件名，不含目录和扩展名 |
 | `output_dir` | string | 否 | `"output"` | 图片输出目录 |
@@ -54,6 +54,18 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
 ```
 
 文件路径相对于输入 JSON 文件所在目录解析。文件引用适合复用角色、风格和负面约束，避免在多个任务中重复输入相同内容。文件内容读取后与内联字符串等价；一个字段不能同时使用内联文本和文件引用。
+模型 API 没有独立的 system role 时，适配器按以下顺序构造最终提示词：
+
+```text
+{system_prompt}
+
+{prompt}
+
+需要避免的内容：
+{negative_prompt}
+```
+
+`negative_prompt` 为 `null` 或未提供时，省略最后一段。三个字段在输入 JSON 中保持独立，拼接仅发生在模型适配器构造上游请求时。
 
 示例 `request.json`：
 
@@ -117,7 +129,7 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
     },
     "aspect_ratio": {
       "type": "string",
-      "enum": ["1:1", "4:3", "3:2", "16:9", "9:16"],
+      "enum": ["1:1", "4:3", "3:4", "16:9", "9:16"],
       "default": "16:9"
     },
     "count": { "type": "integer", "minimum": 1, "default": 1 },
@@ -134,6 +146,76 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
 
 API Key 等敏感信息不应写入任务 JSON，统一从项目根目录的 `.env` 文件读取。
 
+## API 访问协议
+
+CLI 使用 `POST` 请求访问 api.laozhang.ai。所有模型统一使用以下请求头：
+
+```http
+Authorization: Bearer ${LAOZHANG_KEY}
+Content-Type: application/json
+```
+
+模型适配器负责将公共 JSON 参数转换为不同的上游协议：
+
+| CLI 模型 | API 地址 | 上游模型 | 协议 |
+| --- | --- | --- | --- |
+| `gpt-image-2` | `https://api.laozhang.ai/v1/images/generations` | `gpt-image-2-vip` | OpenAI Images 格式 |
+| `nano-banana-2` | `https://api.laozhang.ai/v1beta/models/gemini-3.1-flash-image:generateContent` | URL 内指定 | Gemini `generateContent` 格式 |
+| `nano-banana-pro` | `https://api.laozhang.ai/v1beta/models/gemini-3-pro-image:generateContent` | URL 内指定 | Gemini `generateContent` 格式 |
+
+GPT Image 请求体结构：
+
+```json
+{
+  "model": "gpt-image-2-vip",
+  "prompt": "最终拼接后的提示词",
+  "size": "3840x2160",
+  "quality": "high",
+  "output_format": "webp"
+}
+```
+
+Nano Banana 请求体结构：
+
+```json
+{
+  "contents": [
+    {
+      "parts": [
+        { "text": "最终拼接后的提示词" }
+      ]
+    }
+  ],
+  "generationConfig": {
+    "responseModalities": ["IMAGE"],
+    "imageConfig": {
+      "aspectRatio": "16:9",
+      "imageSize": "4K"
+    }
+  }
+}
+```
+
+### 分辨率映射
+
+Nano Banana 直接使用 `resolution` 的 `1K`、`2K`、`4K` 描述。GPT Image 需要将分辨率和画面比例转换为具体像素：
+
+| 分辨率 | `16:9` | `4:3` | `1:1` | `3:4` | `9:16` |
+| --- | --- | --- | --- | --- | --- |
+| `1K` | `1024x576` | `1024x768` | `1024x1024` | `768x1024` | `576x1024` |
+| `2K` | `2048x1152` | `2048x1536` | `2048x2048` | `1536x2048` | `1152x2048` |
+| `4K` | `3840x2160` | `3840x2880` | `3840x3840` | `2880x3840` | `2160x3840` |
+
+### 上游响应兼容
+
+适配器必须兼容 URL 和 Base64 两类图片响应：
+
+- GPT Image：读取 `data[0].b64_json`，不存在时读取 `data[0].url`。
+- Nano Banana：读取 `candidates[0].content.parts[].inlineData.data`，同时兼容 `inline_data`、`mimeType` 和 `mime_type` 字段名。
+- URL 响应需要继续下载图片；Base64 响应需要解码后保存。
+- 上游错误消息依次从 `error.message`、`message` 或原始响应文本中提取，并连同 HTTP 状态码写入 CLI 输出 JSON。
+
+GPT Image 可以直接请求 PNG、JPEG 或 WebP。Nano Banana 的参考调用没有向 `imageConfig` 传递输出格式，因此 CLI 不应假设其返回特定格式。所有非 WebP 结果仍按照本项目的 WebP 转换规则在本地统一处理。
 ## Python 环境与依赖
 
 项目默认使用 [uv](https://docs.astral.sh/uv/) 管理 Python 版本、虚拟环境、项目依赖和锁文件。依赖声明保存在 `pyproject.toml`，解析后的精确版本保存在 `uv.lock`；`uv.lock` 应提交到版本控制，以保证不同环境中的安装结果可复现。
