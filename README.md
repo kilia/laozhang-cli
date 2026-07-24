@@ -393,15 +393,37 @@ uv run python -m laozhang_cli --input examples/ppt.json
 uv run python -m laozhang_cli --input examples/ppt-gpt.json
 ```
 
-### Codex skill：并发生成 4 张图片
+### Codex Skill：并发生成 4 张图片
 
-使用仓库内的纯 Python skill 安装器和编排器；默认模型为 `nano-banana-2)，默认并发上限为 4：
+仓库提供 `generating-images-with-laozhang-cli` Skill，用于让 Agent 通过统一的 Python 编排器生成、汇总并检查图片。Skill 的设计原则、目录结构、分发边界和验收标准见[《Repository, PyPI, and Agent Skill Standardization》设计文档](docs/superpowers/specs/2026-07-24-repository-pypi-skill-standardization-design.md)。
+
+Skill 目录遵循 Agent Skill 的渐进式披露结构：
+
+```text
+.codex/skills/generating-images-with-laozhang-cli/
+├── SKILL.md                         # 触发条件、核心契约和执行流程
+├── agents/openai.yaml               # Agent 界面元数据
+├── references/request-format.md     # 请求字段和模型差异
+└── scripts/
+    ├── generate.py                  # 批量编排器
+    └── install.py                   # Skill 安装器
+```
+
+使用仓库内的纯 Python Skill 安装器和编排器；默认模型为 `nano-banana-2`，默认并发上限为 4：
 
 ```text
 python .codex/skills/generating-images-with-laozhang-cli/scripts/install.py --cli-root .
 python .codex/skills/generating-images-with-laozhang-cli/scripts/generate.py --request request.json --count 4 --concurrency 4 --output-dir output
 ```
 
-skill 会汇总每个独立 CLI 进程的 JSON 结果，逐张检查图片并报告中文乱码；不会自动重试。Windows、macOS 和 Linux 均使用 Python 文件/进程 API，不依赖 PowerShell、Bash 或 WSL。
+Skill 遵循以下执行契约：
+
+- 每张图片使用一个独立的 CLI 请求，批量任务使用正整数并发上限。
+- 汇总所有成功和失败结果；失败项不会触发自动重试。
+- 每张成功图片都必须实际打开检查，报告可接受、警告或质量检查失败，并特别检查中文文字是否清晰。
+- API Key 只从 CLI checkout 的 `.env` 读取，不写入请求、命令、日志、报告或已安装的 Skill 文件。
+- 安装器只复制 `SKILL.md`、`agents/`、`references/` 和 `scripts/`，排除 `.env`、`config.json`、`__pycache__` 及其他运行产物。
+
+Windows、macOS 和 Linux 均使用 Python 文件/进程 API，不依赖 PowerShell、Bash 或 WSL.
 
 所有示例都要求项目根目录存在 `.env`，并配置有效的 `LAOZHANG_KEY`。不要将真实 key 写入 JSON、示例文件或日志。
