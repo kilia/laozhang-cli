@@ -9,3 +9,5 @@ dist/
 .env
 output/
 .worktrees/
+.DS_Store
+requests/
