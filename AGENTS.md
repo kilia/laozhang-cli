@@ -20,10 +20,13 @@ Non-obvious notes:
   `httpx.MockTransport`, so `uv run pytest` needs no network access and no API
   key. Tests named `*_real.py` / `test_real_*.py` are still offline (the "real"
   refers to exercising real adapter/storage code, not live HTTP).
-- Actual image generation requires a real `LAOZHANG_KEY` in a project-root `.env`
-  file (`cp .env.sample .env`, then fill it in). Without it the CLI still runs and
-  returns a well-formed JSON error `{"success": false, ... "LAOZHANG_KEY is not
-  configured"}` with exit code 3 — that is expected, not a setup failure.
+- Actual image generation requires a real `LAOZHANG_KEY`. The documented path is a
+  project-root `.env` (`cp .env.sample .env`); Cursor Cloud secrets that inject
+  `LAOZHANG_KEY` into the process environment also work, because
+  `Settings.from_environment()` reads via `os.getenv` and `load_dotenv(...,
+  override=False)`. Without a key the CLI still runs and returns a well-formed
+  JSON error `{"success": false, ... "LAOZHANG_KEY is not configured"}` with exit
+  code 3 — that is expected, not a setup failure. Never commit `.env`.
 - The CLI never raises to stdout: it always prints one JSON object to stdout and
   writes diagnostics to stderr. Meaningful exit codes: `0` success, `2` input/JSON
   validation, `3` API/upstream error, `4` download/save/convert error.
