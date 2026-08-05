@@ -1,0 +1,232 @@
+{
+  "requested": 114,
+  "succeeded": 85,
+  "failed": 29,
+  "success_rate": 0.7456,
+  "total_wall_seconds": 311.091,
+  "latency_wall": {
+    "count": 85,
+    "min": 21.586,
+    "max": 68.065,
+    "mean": 34.161,
+    "p50": 30.734,
+    "p90": 47.907,
+    "p95": 60.804,
+    "p99": 67.682
+  },
+  "latency_cli": {
+    "count": 85,
+    "min": 21.311,
+    "max": 67.851,
+    "mean": 33.8,
+    "p50": 30.315,
+    "p90": 47.453,
+    "p95": 60.577,
+    "p99": 67.499
+  },
+  "levels": [
+    {
+      "concurrency": 4,
+      "succeeded": 4,
+      "requested": 4,
+      "success_rate": 1.0,
+      "level_wall_seconds": 34.465,
+      "throughput_rps": 0.1161,
+      "latency_wall": {
+        "count": 4,
+        "min": 26.607,
+        "max": 34.463,
+        "mean": 28.986,
+        "p50": 27.436,
+        "p90": 32.537,
+        "p95": 33.5,
+        "p99": 34.27
+      },
+      "latency_cli": {
+        "count": 4,
+        "min": 26.476,
+        "max": 34.327,
+        "mean": 28.853,
+        "p50": 27.304,
+        "p90": 32.401,
+        "p95": 33.364,
+        "p99": 34.134
+      },
+      "failed": 0
+    },
+    {
+      "concurrency": 8,
+      "succeeded": 8,
+      "requested": 8,
+      "success_rate": 1.0,
+      "level_wall_seconds": 68.074,
+      "throughput_rps": 0.1175,
+      "latency_wall": {
+        "count": 8,
+        "min": 28.258,
+        "max": 68.065,
+        "mean": 52.991,
+        "p50": 62.824,
+        "p90": 67.746,
+        "p95": 67.905,
+        "p99": 68.033
+      },
+      "latency_cli": {
+        "count": 8,
+        "min": 28.055,
+        "max": 67.851,
+        "mean": 52.797,
+        "p50": 62.643,
+        "p90": 67.558,
+        "p95": 67.704,
+        "p99": 67.822
+      },
+      "failed": 0
+    },
+    {
+      "concurrency": 12,
+      "succeeded": 12,
+      "requested": 12,
+      "success_rate": 1.0,
+      "level_wall_seconds": 41.735,
+      "throughput_rps": 0.2875,
+      "latency_wall": {
+        "count": 12,
+        "min": 25.07,
+        "max": 41.733,
+        "mean": 32.092,
+        "p50": 30.957,
+        "p90": 39.372,
+        "p95": 40.49,
+        "p99": 41.484
+      },
+      "latency_cli": {
+        "count": 12,
+        "min": 24.793,
+        "max": 41.455,
+        "mean": 31.828,
+        "p50": 30.731,
+        "p90": 39.114,
+        "p95": 40.226,
+        "p99": 41.209
+      },
+      "failed": 0
+    },
+    {
+      "concurrency": 16,
+      "succeeded": 16,
+      "requested": 16,
+      "success_rate": 1.0,
+      "level_wall_seconds": 32.612,
+      "throughput_rps": 0.4906,
+      "latency_wall": {
+        "count": 16,
+        "min": 23.729,
+        "max": 32.595,
+        "mean": 28.489,
+        "p50": 29.044,
+        "p90": 30.875,
+        "p95": 31.41,
+        "p99": 32.358
+      },
+      "latency_cli": {
+        "count": 16,
+        "min": 23.426,
+        "max": 32.27,
+        "mean": 28.103,
+        "p50": 28.614,
+        "p90": 30.431,
+        "p95": 30.978,
+        "p99": 32.012
+      },
+      "failed": 0
+    },
+    {
+      "concurrency": 20,
+      "succeeded": 20,
+      "requested": 20,
+      "success_rate": 1.0,
+      "level_wall_seconds": 38.815,
+      "throughput_rps": 0.5153,
+      "latency_wall": {
+        "count": 20,
+        "min": 21.586,
+        "max": 38.791,
+        "mean": 29.301,
+        "p50": 28.939,
+        "p90": 36.563,
+        "p95": 38.474,
+        "p99": 38.728
+      },
+      "latency_cli": {
+        "count": 20,
+        "min": 21.311,
+        "max": 38.331,
+        "mean": 28.912,
+        "p50": 28.518,
+        "p90": 36.031,
+        "p95": 37.936,
+        "p99": 38.252
+      },
+      "failed": 0
+    },
+    {
+      "concurrency": 24,
+      "succeeded": 24,
+      "requested": 24,
+      "success_rate": 1.0,
+      "level_wall_seconds": 60.734,
+      "throughput_rps": 0.3952,
+      "latency_wall": {
+        "count": 24,
+        "min": 22.491,
+        "max": 60.708,
+        "mean": 37.595,
+        "p50": 32.995,
+        "p90": 57.062,
+        "p95": 60.628,
+        "p99": 60.69
+      },
+      "latency_cli": {
+        "count": 24,
+        "min": 21.998,
+        "max": 60.308,
+        "mean": 37.141,
+        "p50": 32.556,
+        "p90": 56.623,
+        "p95": 60.238,
+        "p99": 60.294
+      },
+      "failed": 0
+    },
+    {
+      "concurrency": 30,
+      "succeeded": 1,
+      "requested": 30,
+      "success_rate": 0.0333,
+      "level_wall_seconds": 34.645,
+      "throughput_rps": 0.0289,
+      "latency_wall": {
+        "count": 1,
+        "min": 34.617,
+        "max": 34.617,
+        "mean": 34.617,
+        "p50": 34.617,
+        "p90": 34.617,
+        "p95": 34.617,
+        "p99": 34.617
+      },
+      "latency_cli": {
+        "count": 1,
+        "min": 33.98,
+        "max": 33.98,
+        "mean": 33.98,
+        "p50": 33.98,
+        "p90": 33.98,
+        "p95": 33.98,
+        "p99": 33.98
+      },
+      "failed": 29
+    }
+  ]
+}
