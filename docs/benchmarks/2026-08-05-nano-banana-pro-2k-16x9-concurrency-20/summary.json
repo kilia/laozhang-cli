@@ -1,0 +1,235 @@
+{
+  "model": "nano-banana-pro",
+  "resolution": "2K",
+  "aspect_ratio": "16:9",
+  "concurrency": 20,
+  "requested": 20,
+  "succeeded": 20,
+  "failed": 0,
+  "success_rate": 1.0,
+  "level_wall_seconds": 28.657,
+  "throughput_rps": 0.6979,
+  "latency_wall": {
+    "count": 20,
+    "min": 23.564,
+    "max": 28.653,
+    "mean": 25.664,
+    "p50": 25.75,
+    "p90": 26.747,
+    "p95": 27.168,
+    "p99": 28.356
+  },
+  "latency_cli": {
+    "count": 20,
+    "min": 23.288,
+    "max": 28.234,
+    "mean": 25.245,
+    "p50": 25.198,
+    "p90": 26.259,
+    "p95": 26.848,
+    "p99": 27.957
+  },
+  "failures": [],
+  "calls": [
+    {
+      "index": 1,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 25.92,
+      "cli_elapsed_seconds": 25.52,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-01.webp"
+    },
+    {
+      "index": 2,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 24.755,
+      "cli_elapsed_seconds": 24.438,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-02.webp"
+    },
+    {
+      "index": 3,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 28.653,
+      "cli_elapsed_seconds": 28.234,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-03.webp"
+    },
+    {
+      "index": 4,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 25.842,
+      "cli_elapsed_seconds": 25.494,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-04.webp"
+    },
+    {
+      "index": 5,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 26.419,
+      "cli_elapsed_seconds": 26.028,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-05.webp"
+    },
+    {
+      "index": 6,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 25.576,
+      "cli_elapsed_seconds": 25.109,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-06.webp"
+    },
+    {
+      "index": 7,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 25.993,
+      "cli_elapsed_seconds": 25.475,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-07.webp"
+    },
+    {
+      "index": 8,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 24.804,
+      "cli_elapsed_seconds": 24.429,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-08.webp"
+    },
+    {
+      "index": 9,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 23.564,
+      "cli_elapsed_seconds": 23.288,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-09.webp"
+    },
+    {
+      "index": 10,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 26.152,
+      "cli_elapsed_seconds": 25.878,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-10.webp"
+    },
+    {
+      "index": 11,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 26.709,
+      "cli_elapsed_seconds": 26.202,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-11.webp"
+    },
+    {
+      "index": 12,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 25.06,
+      "cli_elapsed_seconds": 24.596,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-12.webp"
+    },
+    {
+      "index": 13,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 25.194,
+      "cli_elapsed_seconds": 24.889,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-13.webp"
+    },
+    {
+      "index": 14,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 25.722,
+      "cli_elapsed_seconds": 25.148,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-14.webp"
+    },
+    {
+      "index": 15,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 24.159,
+      "cli_elapsed_seconds": 23.841,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-15.webp"
+    },
+    {
+      "index": 16,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 24.835,
+      "cli_elapsed_seconds": 24.318,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-16.webp"
+    },
+    {
+      "index": 17,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 25.25,
+      "cli_elapsed_seconds": 24.682,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-17.webp"
+    },
+    {
+      "index": 18,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 27.09,
+      "cli_elapsed_seconds": 26.775,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-18.webp"
+    },
+    {
+      "index": 19,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 25.8,
+      "cli_elapsed_seconds": 25.314,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-19.webp"
+    },
+    {
+      "index": 20,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 25.777,
+      "cli_elapsed_seconds": 25.248,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/nbpro-c20-2k/nbpro-c20-20.webp"
+    }
+  ]
+}
