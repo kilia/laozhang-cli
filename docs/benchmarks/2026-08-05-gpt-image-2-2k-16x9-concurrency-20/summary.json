@@ -1,0 +1,235 @@
+{
+  "model": "gpt-image-2",
+  "resolution": "2K",
+  "aspect_ratio": "16:9",
+  "concurrency": 20,
+  "requested": 20,
+  "succeeded": 20,
+  "failed": 0,
+  "success_rate": 1.0,
+  "level_wall_seconds": 99.782,
+  "throughput_rps": 0.2004,
+  "latency_wall": {
+    "count": 20,
+    "min": 57.843,
+    "max": 99.777,
+    "mean": 84.724,
+    "p50": 94.907,
+    "p90": 95.786,
+    "p95": 99.443,
+    "p99": 99.71
+  },
+  "latency_cli": {
+    "count": 20,
+    "min": 57.297,
+    "max": 99.282,
+    "mean": 84.203,
+    "p50": 94.349,
+    "p90": 95.319,
+    "p95": 98.892,
+    "p99": 99.204
+  },
+  "failures": [],
+  "calls": [
+    {
+      "index": 1,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 95.124,
+      "cli_elapsed_seconds": 94.685,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-01.webp"
+    },
+    {
+      "index": 2,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 69.859,
+      "cli_elapsed_seconds": 69.348,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-02.webp"
+    },
+    {
+      "index": 3,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 95.382,
+      "cli_elapsed_seconds": 94.924,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-03.webp"
+    },
+    {
+      "index": 4,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 99.777,
+      "cli_elapsed_seconds": 99.282,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-04.webp"
+    },
+    {
+      "index": 5,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 82.915,
+      "cli_elapsed_seconds": 82.404,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-05.webp"
+    },
+    {
+      "index": 6,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 95.21,
+      "cli_elapsed_seconds": 94.714,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-06.webp"
+    },
+    {
+      "index": 7,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 69.93,
+      "cli_elapsed_seconds": 69.408,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-07.webp"
+    },
+    {
+      "index": 8,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 69.918,
+      "cli_elapsed_seconds": 69.481,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-08.webp"
+    },
+    {
+      "index": 9,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 76.583,
+      "cli_elapsed_seconds": 76.083,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-09.webp"
+    },
+    {
+      "index": 10,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 94.964,
+      "cli_elapsed_seconds": 94.434,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-10.webp"
+    },
+    {
+      "index": 11,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 95.115,
+      "cli_elapsed_seconds": 94.593,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-11.webp"
+    },
+    {
+      "index": 12,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 71.517,
+      "cli_elapsed_seconds": 70.977,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-12.webp"
+    },
+    {
+      "index": 13,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 95.284,
+      "cli_elapsed_seconds": 94.73,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-13.webp"
+    },
+    {
+      "index": 14,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 70.308,
+      "cli_elapsed_seconds": 69.784,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-14.webp"
+    },
+    {
+      "index": 15,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 99.425,
+      "cli_elapsed_seconds": 98.871,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-15.webp"
+    },
+    {
+      "index": 16,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 95.219,
+      "cli_elapsed_seconds": 94.656,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-16.webp"
+    },
+    {
+      "index": 17,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 95.25,
+      "cli_elapsed_seconds": 94.659,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-17.webp"
+    },
+    {
+      "index": 18,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 69.999,
+      "cli_elapsed_seconds": 69.469,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-18.webp"
+    },
+    {
+      "index": 19,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 94.851,
+      "cli_elapsed_seconds": 94.263,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-19.webp"
+    },
+    {
+      "index": 20,
+      "success": true,
+      "exit_code": 0,
+      "wall_seconds": 57.843,
+      "cli_elapsed_seconds": 57.297,
+      "http_status": 200,
+      "message": "Image generated successfully",
+      "image_path": "/workspace/output/gpt-c20-2k/gpt-c20-20.webp"
+    }
+  ]
+}
