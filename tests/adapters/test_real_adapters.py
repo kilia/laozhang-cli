@@ -57,7 +57,13 @@ def test_gpt_image_posts_expected_payload_and_decodes_base64() -> None:
     adapter = GptImageAdapter(Settings("secret-key"), client, storage)  # type: ignore[arg-type]
 
     result = adapter.generate(
-        _request("gpt-image-2", resolution="4K", aspect_ratio="9:16", count=2)
+        _request(
+            'gpt-image-2',
+            resolution='4K',
+            aspect_ratio='9:16',
+            quality='medium',
+            count=2,
+        )
     )
 
     sent = captured["request"]
@@ -68,7 +74,7 @@ def test_gpt_image_posts_expected_payload_and_decodes_base64() -> None:
         "model": "gpt-image-2-vip",
         "prompt": "cinematic style\n\na city\n\n需要避免的内容：blur",
         "size": "2160x3840",
-        "quality": "high",
+        'quality': 'medium',
         "output_format": "webp",
         "n": 2,
     }
@@ -170,7 +176,7 @@ def test_nano_banana_posts_expected_payload_and_decodes_inline_data(
     client = httpx.Client(transport=httpx.MockTransport(handler))
 
     result = NanoBananaAdapter(Settings("secret-key"), client, storage).generate(  # type: ignore[arg-type]
-        _request(model, resolution="4K", aspect_ratio="16:9", count=2)
+        _request(model, resolution='4K', aspect_ratio='16:9', quality='medium', count=2)
     )
 
     sent = captured["request"]
