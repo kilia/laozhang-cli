@@ -43,7 +43,7 @@ class GptImageAdapter:
 
     def generate(self, request: GenerationRequest) -> GenerationResult:
         settings = self._settings or Settings.from_environment()
-        client = self._client or httpx.Client(timeout=_TIMEOUT_SECONDS)
+        client = self._client or httpx.Client(timeout=_TIMEOUT_SECONDS, proxy=settings.proxy)
         payload: dict[str, Any] = {
             "model": "gpt-image-2-vip",
             "prompt": compose_prompt(request),
