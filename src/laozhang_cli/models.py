@@ -12,6 +12,7 @@ _ALLOWED_FIELDS = {
     "negative_prompt",
     "resolution",
     "aspect_ratio",
+    "quality",
     "count",
     "filename",
     "output_dir",
@@ -20,6 +21,7 @@ _ALLOWED_FIELDS = {
 _ALLOWED_RESOLUTIONS = {"1K", "2K", "4K"}
 _ALLOWED_ASPECT_RATIOS = {"1:1", "4:3", "3:4", "16:9", "9:16"}
 _INVALID_FILENAME_CHARACTERS = frozenset('\\/:*?"<>|')
+_ALLOWED_QUALITIES = {"high", "medium", "low"}
 
 
 @dataclass(frozen=True)
@@ -36,6 +38,7 @@ class GenerationRequest:
     negative_prompt: PromptValue | None
     resolution: str
     aspect_ratio: str
+    quality: str
     count: int
     filename: str | None
     output_dir: Path
@@ -79,6 +82,10 @@ class GenerationRequest:
         if aspect_ratio not in _ALLOWED_ASPECT_RATIOS:
             raise InputValidationError(f"invalid aspect_ratio: {aspect_ratio}")
 
+        quality = data.get("quality", "high")
+        if not isinstance(quality, str) or quality not in _ALLOWED_QUALITIES:
+            raise InputValidationError(f"invalid quality: {quality}")
+
         count = data.get("count", 1)
         if type(count) is not int or count < 1:
             raise InputValidationError("count must be a positive integer")
@@ -102,6 +109,7 @@ class GenerationRequest:
             negative_prompt=negative_prompt,
             resolution=resolution,
             aspect_ratio=aspect_ratio,
+            quality=quality,
             count=count,
             filename=filename,
             output_dir=Path(output_dir),
