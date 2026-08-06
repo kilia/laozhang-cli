@@ -25,6 +25,7 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
 | `prompt` | string \| object | 是 | — | 指定当前图片的具体内容；支持内联文本或外部文件引用 |
 | `negative_prompt` | string \| object \| null | 否 | `null` | 指定不希望出现的内容；支持内联文本或外部文件引用，不支持该能力的模型将忽略此项 |
 | `resolution` | string | 否 | `"2K"` | 统一分辨率描述，如 `"1K"`、`"2K"`、`"4K"` |
+| `quality` | string | 否 | `high` | 生成质量，可选 `high`、`medium` 或 `low`；仅 `gpt-image-2` 生效，Nano Banana 模型忽略此参数 |
 | `aspect_ratio` | string | 否 | `"16:9"` | 统一画面比例，如 `"1:1"`、`"4:3"`、`"3:4"`、`"16:9"`、`"9:16"` |
 | `count` | integer | 否 | `1` | 生成图片数量，实际可用范围由模型决定 |
 | `filename` | string | 否 | 当前时间戳 | 输出文件名，不含目录和扩展名 |
@@ -38,6 +39,8 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
 - 模型专用的像素宽高表示。
 
 适配器会根据 `resolution` 和 `aspect_ratio` 计算或选择模型支持的最接近尺寸。若模型无法精确满足请求，应在输出消息中说明实际采用的参数，而不是静默改变结果。
+
+其中 `quality` 只接受 `high`、`medium` 和 `low`。对 `nano-banana-2` 与 `nano-banana-pro`，该参数不会传给上游 API；对 `gpt-image-2`，默认值为 `high`。
 
 ## 输入 JSON
 
@@ -82,6 +85,7 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
   "resolution": "4K",
   "aspect_ratio": "16:9",
   "count": 1,
+  "quality": "high",
   "filename": "futuristic-city",
   "output_dir": "output",
   "convert_to_webp": true
@@ -132,6 +136,11 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
       "enum": ["1:1", "4:3", "3:4", "16:9", "9:16"],
       "default": "16:9"
     },
+    "quality": {
+      "type": "string",
+      "enum": ["high", "medium", "low"],
+      "default": "high"
+    },
     "count": { "type": "integer", "minimum": 1, "default": 1 },
     "filename": {
       "type": "string",
@@ -174,6 +183,8 @@ GPT Image 请求体结构：
   "output_format": "webp"
 }
 ```
+
+`quality` 支持 `high`、`medium` 和 `low`；Nano Banana 请求不使用该参数。
 
 Nano Banana 请求体结构：
 
@@ -219,6 +230,9 @@ GPT Image 可以直接请求 PNG、JPEG 或 WebP。Nano Banana 的参考调用�
 ## Python 环境与依赖
 
 项目默认使用 [uv](https://docs.astral.sh/uv/) 管理 Python 版本、虚拟环境、项目依赖和锁文件。依赖声明保存在 `pyproject.toml`，解析后的精确版本保存在 `uv.lock`；`uv.lock` 应提交到版本控制，以保证不同环境中的安装结果可复现。
+
+项目已包含 `socksio` 运行时依赖，用于启用 `httpx` 的 SOCKS5 支持。需要通过 SOCKS5 代理访问上游 API 时，在 `.env` 中设置 `LAOZHANG_PROXY`，例如 `socks5://127.0.0.1:7890`；不设置时使用直连或系统代理环境变量。
+
 
 首次获取项目后同步环境：
 
@@ -346,6 +360,8 @@ CLI 所需的 Key 存放在项目根目录的 `.env` 文件中：
 
 ```dotenv
 LAOZHANG_KEY=your-real-api-key
+# 可选：通过 SOCKS5 代理访问上游 API
+# LAOZHANG_PROXY=socks5://127.0.0.1:7890
 ```
 
 复制示例文件并填写真实 Key：
