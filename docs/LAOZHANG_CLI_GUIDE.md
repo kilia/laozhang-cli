@@ -140,6 +140,7 @@ nano-banana-pro
 | `resolution` | `1K`、`2K`、`4K` |
 | `aspect_ratio` | `1:1`、`4:3`、`3:4`、`16:9`、`9:16` |
 | `count` | 正整数，实际限制取决于模型 |
+| `quality` | `high` / `medium` / `low`；仅 `gpt-image-2` 生效，Nano Banana 忽略 |
 | `filename` | 不含目录和扩展名；每次应使用新名称，避免混淆 |
 | `output_dir` | 默认 `output` |
 | `convert_to_webp` | 推荐设为 `true` |

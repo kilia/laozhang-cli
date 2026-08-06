@@ -34,7 +34,7 @@ class NanoBananaAdapter:
 
     def generate(self, request: GenerationRequest) -> GenerationResult:
         settings = self._settings or Settings.from_environment()
-        client = self._client or httpx.Client(timeout=120.0)
+        client = self._client or httpx.Client(timeout=120.0, proxy=settings.proxy)
         payload: dict[str, Any] = {
             "contents": [{"parts": [{"text": compose_prompt(request)}]}],
             "generationConfig": {

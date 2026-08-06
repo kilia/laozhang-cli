@@ -12,11 +12,14 @@ The UTF-8 JSON root must be an object. `system_prompt` and `prompt` are required
 | `negative_prompt` | string, file object, or `null` | `null` |
 | `resolution` | `1K`, `2K`, `4K` | `2K` |
 | `aspect_ratio` | `1:1`, `4:3`, `3:4`, `16:9`, `9:16` | `16:9` |
+| `quality` | `high`, `medium`, `low` | `high` |
 | `filename` | safe stem without path or extension | timestamp |
 | `output_dir` | directory path | `output` |
 | `convert_to_webp` | boolean | `true` |
 
 Prompt file paths are resolved relative to the template file by `laozhang-cli`. Absolute prompt file paths also work. Keep exact Chinese text in the prompt without rewriting it.
+`quality` is accepted for every model, but only `gpt-image-2` uses it. `nano-banana-2` and `nano-banana-pro` ignore the field.
+
 
 Example:
 
