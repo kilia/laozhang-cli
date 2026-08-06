@@ -36,3 +36,25 @@ Non-obvious notes:
 - Generated images default to `output/` (git-ignored). The bundled agent skill in
   `.codex/skills/generating-images-with-laozhang-cli/` is optional tooling and is
   covered by the same `uv run pytest` suite.
+
+# Codex
+
+## Windows sandbox troubleshooting
+
+### Latest verification after lowering the sandbox level and restarting Codex
+
+- Default read access and regular process startup worked: `Get-Location`, `Get-Content`, `rg --version`, and `uv --version` all succeeded without escalation.
+- `uv run pytest` with the default uv cache failed because `%LOCALAPPDATA%\uv\cache` was denied.
+- Redirecting `UV_CACHE_DIR` and pytest cache/temp paths into the workspace allowed uv and most tests to start, but pytest still could not access child-process temp directories: `80 passed, 45 errors`.
+- `uv run ruff check .` exited 0 with a local uv cache, but emitted permission warnings while handling its cache.
+- `apply_patch` still failed with `windows unelevated restricted-token sandbox cannot enforce split writable root sets directly; refusing to run unsandboxed`.
+
+Conclusion: the default Windows sandbox is partially usable for reads and simple process startup, but it is not fully usable for this repository's cache/temp-heavy tests or patch helper. Full test/lint workflows and edits still need the escalation or Git Bash fallback below.
+
+### Fallback procedure
+
+1. Retry a read-only command once. If it still fails, rerun it with `sandbox_permissions: require_escalated` and a concise justification.
+2. Prefer `apply_patch` for edits. If its wrapper is rejected, use the repository's Git Bash and apply a minimal unified diff with `git apply` from the repository root.
+3. Because the checkout uses CRLF in the worktree (`core.autocrlf=true`), use `git apply --unidiff-zero` for small insertions or replacements, then inspect `git diff` and `git diff --check`.
+4. Keep cache/temp paths inside a known writable location only when diagnosing; do not use broad destructive commands, whole-file rewrites, shell redirection, or expose `.env`/API keys.
+5. Run the relevant tests and lint checks after editing, and report whether escalation or the fallback was required.

@@ -25,6 +25,7 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
 | `prompt` | string \| object | 是 | — | 指定当前图片的具体内容；支持内联文本或外部文件引用 |
 | `negative_prompt` | string \| object \| null | 否 | `null` | 指定不希望出现的内容；支持内联文本或外部文件引用，不支持该能力的模型将忽略此项 |
 | `resolution` | string | 否 | `"2K"` | 统一分辨率描述，如 `"1K"`、`"2K"`、`"4K"` |
+| `quality` | string | 否 | `high` | 生成质量，可选 `high`、`medium` 或 `low`；仅 `gpt-image-2` 生效，Nano Banana 模型忽略此参数 |
 | `aspect_ratio` | string | 否 | `"16:9"` | 统一画面比例，如 `"1:1"`、`"4:3"`、`"3:4"`、`"16:9"`、`"9:16"` |
 | `count` | integer | 否 | `1` | 生成图片数量，实际可用范围由模型决定 |
 | `filename` | string | 否 | 当前时间戳 | 输出文件名，不含目录和扩展名 |
@@ -38,6 +39,8 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
 - 模型专用的像素宽高表示。
 
 适配器会根据 `resolution` 和 `aspect_ratio` 计算或选择模型支持的最接近尺寸。若模型无法精确满足请求，应在输出消息中说明实际采用的参数，而不是静默改变结果。
+
+其中 `quality` 只接受 `high`、`medium` 和 `low`。对 `nano-banana-2` 与 `nano-banana-pro`，该参数不会传给上游 API；对 `gpt-image-2`，默认值为 `high`。
 
 ## 输入 JSON
 
@@ -82,6 +85,7 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
   "resolution": "4K",
   "aspect_ratio": "16:9",
   "count": 1,
+  "quality": "high",
   "filename": "futuristic-city",
   "output_dir": "output",
   "convert_to_webp": true
@@ -132,6 +136,11 @@ CLI 对外只暴露一组模型无关的参数，再由模型适配器转换为�
       "enum": ["1:1", "4:3", "3:4", "16:9", "9:16"],
       "default": "16:9"
     },
+    "quality": {
+      "type": "string",
+      "enum": ["high", "medium", "low"],
+      "default": "high"
+    },
     "count": { "type": "integer", "minimum": 1, "default": 1 },
     "filename": {
       "type": "string",
@@ -174,6 +183,8 @@ GPT Image 请求体结构：
   "output_format": "webp"
 }
 ```
+
+`quality` 支持 `high`、`medium` 和 `low`；Nano Banana 请求不使用该参数。
 
 Nano Banana 请求体结构：
 

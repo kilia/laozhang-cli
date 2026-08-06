@@ -48,7 +48,7 @@ class GptImageAdapter:
             "model": "gpt-image-2-vip",
             "prompt": compose_prompt(request),
             "size": _SIZES[(request.resolution, request.aspect_ratio)],
-            "quality": "high",
+            "quality": request.quality,
             "output_format": "webp",
             "n": request.count,
         }
