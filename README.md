@@ -231,6 +231,9 @@ GPT Image 可以直接请求 PNG、JPEG 或 WebP。Nano Banana 的参考调用�
 
 项目默认使用 [uv](https://docs.astral.sh/uv/) 管理 Python 版本、虚拟环境、项目依赖和锁文件。依赖声明保存在 `pyproject.toml`，解析后的精确版本保存在 `uv.lock`；`uv.lock` 应提交到版本控制，以保证不同环境中的安装结果可复现。
 
+项目已包含 `socksio` 运行时依赖，用于启用 `httpx` 的 SOCKS5 支持。需要通过 SOCKS5 代理访问上游 API 时，在 `.env` 中设置 `LAOZHANG_PROXY`，例如 `socks5://127.0.0.1:7890`；不设置时使用直连或系统代理环境变量。
+
+
 首次获取项目后同步环境：
 
 ```bash
@@ -357,6 +360,8 @@ CLI 所需的 Key 存放在项目根目录的 `.env` 文件中：
 
 ```dotenv
 LAOZHANG_KEY=your-real-api-key
+# 可选：通过 SOCKS5 代理访问上游 API
+# LAOZHANG_PROXY=socks5://127.0.0.1:7890
 ```
 
 复制示例文件并填写真实 Key：
