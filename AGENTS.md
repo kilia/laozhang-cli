@@ -38,6 +38,18 @@ Non-obvious notes:
   covered by the same `uv run pytest` suite.
 
 # Codex
+## GitHub pull request workflow
+
+- GitHub does not allow the author of a pull request to approve their own PR. Do not attempt self-approval.
+- For routine changes, prefer committing directly when the repository workflow permits it.
+- When a PR is required, create or use the PR, mark it Ready for review, and merge it directly when checks and policy allow; do not wait for self-approval.
+
+## GitHub CLI proxy troubleshooting
+
+- In the Codex Windows process, `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY` and their lowercase variants may be set to `http://127.0.0.1:9`. This makes `gh api user` fail before reaching GitHub with a `proxyconnect tcp` error.
+- This network failure can be misreported by `gh auth status` as an invalid keyring token. Verify connectivity before treating the token as invalid; the token may still be valid.
+- For a process-local retry, clear both uppercase and lowercase proxy variables, then run `gh api user --jq .login` and `gh auth status`. Do not change persistent user or system proxy settings without explicit approval.
+
 
 ## Windows sandbox troubleshooting
 
