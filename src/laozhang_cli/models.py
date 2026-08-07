@@ -10,6 +10,7 @@ _ALLOWED_FIELDS = {
     "system_prompt",
     "prompt",
     "negative_prompt",
+    "reference_images",
     "resolution",
     "aspect_ratio",
     "quality",
@@ -36,6 +37,7 @@ class GenerationRequest:
     system_prompt: PromptValue
     prompt: PromptValue
     negative_prompt: PromptValue | None
+    reference_images: tuple[Path, ...]
     resolution: str
     aspect_ratio: str
     quality: str
@@ -69,6 +71,7 @@ class GenerationRequest:
         )
         assert system_prompt is not None
         assert prompt is not None
+        reference_images = _parse_reference_images(data.get("reference_images"), base_dir)
 
         resolution = data.get("resolution", "2K")
         if not isinstance(resolution, str):
@@ -107,6 +110,7 @@ class GenerationRequest:
             system_prompt=system_prompt,
             prompt=prompt,
             negative_prompt=negative_prompt,
+            reference_images=reference_images,
             resolution=resolution,
             aspect_ratio=aspect_ratio,
             quality=quality,
@@ -156,3 +160,17 @@ def _is_safe_filename(value: object) -> bool:
         and bool(value)
         and not any(character in _INVALID_FILENAME_CHARACTERS for character in value)
     )
+
+
+def _parse_reference_images(value: object, base_dir: Path) -> tuple[Path, ...]:
+    if value is None:
+        return ()
+    if not isinstance(value, list) or not value:
+        raise InputValidationError("reference_images must be a non-empty array of paths")
+
+    paths: list[Path] = []
+    for item in value:
+        if not isinstance(item, str) or not item.strip():
+            raise InputValidationError("reference_images must contain non-empty path strings")
+        paths.append(base_dir / item)
+    return tuple(paths)

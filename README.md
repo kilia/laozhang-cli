@@ -443,3 +443,36 @@ Skill 遵循以下执行契约：
 Windows、macOS 和 Linux 均使用 Python 文件/进程 API，不依赖 PowerShell、Bash 或 WSL.
 
 所有示例都要求项目根目录存在 `.env`，并配置有效的 `LAOZHANG_KEY`。不要将真实 key 写入 JSON、示例文件或日志。
+
+## Multi-image editing
+
+Add a non-empty `reference_images` path array to the request JSON to enter image-editing mode. Relative paths are resolved from the request JSON directory, and array order is preserved as image 1, image 2, and so on.
+
+```json
+{
+  "model": "nano-banana-2",
+  "system_prompt": "Use the supplied reference images and preserve important visual details.",
+  "prompt": "Use the subject from image 1 and the composition from image 2 to create a new image.",
+  "reference_images": [
+    "images/image_1.jpg",
+    "images/image_2.jpg"
+  ],
+  "resolution": "2K",
+  "aspect_ratio": "1:1",
+  "filename": "edited-image",
+  "output_dir": "output",
+  "convert_to_webp": true
+}
+```
+
+Run it through the existing CLI interface:
+
+```bash
+uv run python -m laozhang_cli --input examples/image-edit.json
+```
+
+- `gpt-image-2` posts every reference as a repeated `image` multipart field to `/v1/images/edits`.
+- `nano-banana-2` and `nano-banana-pro` append references as ordered Gemini `inline_data` parts.
+- Omitting `reference_images` keeps the existing text-to-image behavior.
+- Missing, unreadable, or empty reference images return input error exit code 2 before any upstream request.
+- Raw upstream protocol samples are kept in `examples/reference/` for GPT Image, Nano Banana 2, and Nano Banana Pro.
