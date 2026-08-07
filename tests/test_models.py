@@ -18,10 +18,11 @@ def test_request_applies_readme_defaults() -> None:
     request = GenerationRequest.from_dict(valid_request_data(), Path("."))
 
     assert (request.resolution, request.aspect_ratio, request.count) == ("2K", "16:9", 1)
-    assert request.quality == 'high'
+    assert request.quality == "high"
     assert request.negative_prompt is None
     assert request.output_dir == Path("output")
     assert request.convert_to_webp is True
+    assert request.reference_images == ()
 
 
 def test_request_normalizes_inline_and_file_prompts() -> None:
@@ -45,22 +46,45 @@ def test_request_accepts_explicit_valid_options() -> None:
             **valid_request_data(),
             "resolution": "4K",
             "aspect_ratio": "9:16",
-            'quality': 'low',
+            "quality": "low",
             "count": 3,
             "filename": "city-01",
             "output_dir": "renders",
             "convert_to_webp": False,
+            "reference_images": ["refs/one.png", "refs/two.jpg"],
         },
-        Path("."),
+        Path("requests"),
     )
 
     assert request.resolution == "4K"
-    assert request.quality == 'low'
+    assert request.quality == "low"
     assert request.aspect_ratio == "9:16"
     assert request.count == 3
     assert request.filename == "city-01"
     assert request.output_dir == Path("renders")
     assert request.convert_to_webp is False
+    assert request.reference_images == (
+        Path("requests/refs/one.png"),
+        Path("requests/refs/two.jpg"),
+    )
+
+
+@pytest.mark.parametrize(
+    "reference_images",
+    [
+        [],
+        "image.png",
+        [""],
+        [1],
+        ["one.png", None],
+    ],
+)
+def test_request_rejects_invalid_reference_images(reference_images: object) -> None:
+    with pytest.raises(InputValidationError, match="reference_images"):
+        GenerationRequest.from_dict(
+            {**valid_request_data(), "reference_images": reference_images},
+            Path("."),
+        )
 
 
 def test_request_rejects_unknown_keys() -> None:
@@ -115,10 +139,10 @@ def test_request_rejects_invalid_aspect_ratio(aspect_ratio: object) -> None:
         )
 
 
-@pytest.mark.parametrize('quality', ['ultra', '', 1, None, ['high']])
+@pytest.mark.parametrize("quality", ["ultra", "", 1, None, ["high"]])
 def test_request_rejects_invalid_quality(quality: object) -> None:
-    with pytest.raises(InputValidationError, match='invalid quality'):
-        GenerationRequest.from_dict({**valid_request_data(), 'quality': quality}, Path('.'))
+    with pytest.raises(InputValidationError, match="invalid quality"):
+        GenerationRequest.from_dict({**valid_request_data(), "quality": quality}, Path("."))
 
 
 @pytest.mark.parametrize("count", [0, -1, 1.5, "2", True])

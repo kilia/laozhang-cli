@@ -1,0 +1,14 @@
+{
+  "model": "nano-banana-2",
+  "system_prompt": "Use the supplied reference images and preserve important visual details.",
+  "prompt": "Use the subject from image 1 and the composition from image 2 to create a new image.",
+  "reference_images": [
+    "images/image_1.jpg",
+    "images/image_2.jpg"
+  ],
+  "resolution": "2K",
+  "aspect_ratio": "1:1",
+  "filename": "edited-image",
+  "output_dir": "output",
+  "convert_to_webp": true
+}

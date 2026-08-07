@@ -1,3 +1,4 @@
+import base64
 from typing import Any
 
 import httpx
@@ -7,17 +8,19 @@ from laozhang_cli.errors import ApiError
 from laozhang_cli.models import GenerationRequest, GenerationResult
 from laozhang_cli.services.storage import ImageStorage
 
-from .http import compose_prompt, decode_base64, download_image, post_json
+from .http import compose_prompt, decode_base64, download_image, load_reference_images, post_json
 
 _ENDPOINTS = {
     "nano-banana-2": (
-        "https://api.laozhang.ai/v1beta/models/"
-        "gemini-3.1-flash-image:generateContent"
+        "https://api.laozhang.ai/v1beta/models/gemini-3.1-flash-image:generateContent"
     ),
-    "nano-banana-pro": (
-        "https://api.laozhang.ai/v1beta/models/"
-        "gemini-3-pro-image:generateContent"
-    ),
+    "nano-banana-pro": ("https://api.laozhang.ai/v1beta/models/gemini-3-pro-image:generateContent"),
+}
+
+
+_EDIT_ENDPOINTS = {
+    model: endpoint.replace("https://api.laozhang.ai", "https://api2.laozhang.ai")
+    for model, endpoint in _ENDPOINTS.items()
 }
 
 
@@ -33,10 +36,21 @@ class NanoBananaAdapter:
         self._storage = storage or ImageStorage()
 
     def generate(self, request: GenerationRequest) -> GenerationResult:
+        references = load_reference_images(request.reference_images)
         settings = self._settings or Settings.from_environment()
         client = self._client or httpx.Client(timeout=120.0, proxy=settings.proxy)
+        parts: list[dict[str, Any]] = [{"text": compose_prompt(request)}]
+        for _filename, data, mime_type in references:
+            parts.append(
+                {
+                    "inline_data": {
+                        "mime_type": mime_type,
+                        "data": base64.b64encode(data).decode("ascii"),
+                    }
+                }
+            )
         payload: dict[str, Any] = {
-            "contents": [{"parts": [{"text": compose_prompt(request)}]}],
+            "contents": [{"parts": parts}],
             "generationConfig": {
                 "candidateCount": request.count,
                 "responseModalities": ["IMAGE"],
@@ -48,7 +62,7 @@ class NanoBananaAdapter:
         }
         response, body = post_json(
             client,
-            _ENDPOINTS[request.model],
+            (_EDIT_ENDPOINTS if request.reference_images else _ENDPOINTS)[request.model],
             settings.api_key,
             payload,
         )

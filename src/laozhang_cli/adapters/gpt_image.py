@@ -7,9 +7,17 @@ from laozhang_cli.errors import ApiError
 from laozhang_cli.models import GenerationRequest, GenerationResult
 from laozhang_cli.services.storage import ImageStorage
 
-from .http import compose_prompt, decode_base64, download_image, post_json
+from .http import (
+    compose_prompt,
+    decode_base64,
+    download_image,
+    load_reference_images,
+    post_json,
+    post_multipart,
+)
 
 _ENDPOINT = "https://api.laozhang.ai/v1/images/generations"
+_EDIT_ENDPOINT = "https://api2.laozhang.ai/v1/images/edits"
 _TIMEOUT_SECONDS = 300.0
 _SIZES = {
     ("1K", "16:9"): "1024x576",
@@ -42,6 +50,7 @@ class GptImageAdapter:
         self._storage = storage or ImageStorage()
 
     def generate(self, request: GenerationRequest) -> GenerationResult:
+        references = load_reference_images(request.reference_images)
         settings = self._settings or Settings.from_environment()
         client = self._client or httpx.Client(timeout=_TIMEOUT_SECONDS, proxy=settings.proxy)
         payload: dict[str, Any] = {
@@ -52,7 +61,18 @@ class GptImageAdapter:
             "output_format": "webp",
             "n": request.count,
         }
-        response, body = post_json(client, _ENDPOINT, settings.api_key, payload)
+        if request.reference_images:
+            multipart_data = {key: str(value) for key, value in payload.items()}
+            files = [("image", reference) for reference in references]
+            response, body = post_multipart(
+                client,
+                _EDIT_ENDPOINT,
+                settings.api_key,
+                multipart_data,
+                files,
+            )
+        else:
+            response, body = post_json(client, _ENDPOINT, settings.api_key, payload)
         images: list[tuple[bytes, str | None]] = []
         data = body.get("data") if isinstance(body, dict) else None
         if isinstance(data, list):
