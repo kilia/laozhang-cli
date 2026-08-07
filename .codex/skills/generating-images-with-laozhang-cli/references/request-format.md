@@ -10,6 +10,7 @@ The UTF-8 JSON root must be an object. `system_prompt` and `prompt` are required
 | `system_prompt` | non-empty string or `{"file": "relative/path.md"}` | required |
 | `prompt` | non-empty string or `{"file": "relative/path.md"}` | required |
 | `negative_prompt` | string, file object, or `null` | `null` |
+| `reference_images` | non-empty array of image paths | omitted (text-to-image mode) |
 | `resolution` | `1K`, `2K`, `4K` | `2K` |
 | `aspect_ratio` | `1:1`, `4:3`, `3:4`, `16:9`, `9:16` | `16:9` |
 | `quality` | `high`, `medium`, `low` | `high` |
@@ -18,6 +19,7 @@ The UTF-8 JSON root must be an object. `system_prompt` and `prompt` are required
 | `convert_to_webp` | boolean | `true` |
 
 Prompt file paths are resolved relative to the template file by `laozhang-cli`. Absolute prompt file paths also work. Keep exact Chinese text in the prompt without rewriting it.
+Reference image paths follow the same rule. Their array order is preserved as image 1, image 2, and so on. When references are present, the CLI switches to each model's image-editing protocol.
 `quality` is accepted for every model, but only `gpt-image-2` uses it. `nano-banana-2` and `nano-banana-pro` ignore the field.
 
 
@@ -29,6 +31,7 @@ Example:
   "system_prompt": "Create a clean commercial poster. Render supplied text exactly.",
   "prompt": "主标题：智启未来",
   "negative_prompt": "garbled text, invented glyphs, watermark",
+  "reference_images": ["images/subject.png", "images/layout.jpg"],
   "resolution": "2K",
   "aspect_ratio": "16:9",
   "convert_to_webp": true

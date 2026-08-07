@@ -55,6 +55,12 @@ def load_template(path: Path) -> dict[str, object]:
     for field in ("system_prompt", "prompt"):
         if field not in payload:
             raise ValueError(f"missing required field: {field}")
+    reference_images = payload.get("reference_images")
+    if isinstance(reference_images, list):
+        payload["reference_images"] = [
+            str((path.parent / item).resolve()) if isinstance(item, str) and item else item
+            for item in reference_images
+        ]
     return payload
 
 

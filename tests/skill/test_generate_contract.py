@@ -84,6 +84,29 @@ def test_load_template_preserves_utf8(tmp_path: Path) -> None:
     assert module.load_template(source)["prompt"] == "智启未来"
 
 
+def test_load_template_resolves_reference_images_from_template_directory(tmp_path: Path) -> None:
+    module = _load_module()
+    source = tmp_path / "requests" / "request.json"
+    source.parent.mkdir()
+    source.write_text(
+        json.dumps(
+            {
+                "system_prompt": "style",
+                "prompt": "edit",
+                "reference_images": ["images/one.png", "../shared/two.jpg"],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    payload = module.load_template(source)
+
+    assert payload["reference_images"] == [
+        str((source.parent / "images/one.png").resolve()),
+        str((source.parent / "../shared/two.jpg").resolve()),
+    ]
+
+
 @pytest.mark.parametrize(
     "payload,message",
     [
