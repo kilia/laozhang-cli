@@ -177,12 +177,14 @@ def audit_blobs(repo: Path, extra: list[re.Pattern[str]]) -> list[Finding]:
 
 
 def _commit_metadata(repo: Path) -> list[tuple[str, str, str, str]]:
-    log = _git("log", "--all", "--format=%H%x1f%an <%ae>%x1f%cn <%ce>%x1f%s", repo=repo)
+    """(sha, author, committer, 完整提交信息)；提交信息可能多行，所以用 NUL 分隔记录。"""
+    log = _git("log", "--all", "--format=%H%x1f%an <%ae>%x1f%cn <%ce>%x1f%B%x00", repo=repo)
     rows = []
-    for line in log.splitlines():
-        if line:
-            sha, author, committer, subject = line.split("\x1f")
-            rows.append((sha, author, committer, subject))
+    for record in log.split("\0"):
+        stripped = record.strip("\n")
+        if stripped:
+            sha, author, committer, message = stripped.split("\x1f")
+            rows.append((sha, author, committer, message))
     return rows
 
 
@@ -193,8 +195,8 @@ def audit_commit_metadata(repo: Path, extra: list[re.Pattern[str]]) -> list[Find
     清单展示（见 `identity_inventory`），失败判定交给 `--patterns-file`。
     """
     findings: list[Finding] = []
-    for sha, author, committer, subject in _commit_metadata(repo):
-        for label, value in (("author", author), ("committer", committer), ("subject", subject)):
+    for sha, author, committer, message in _commit_metadata(repo):
+        for label, value in (("author", author), ("committer", committer), ("message", message)):
             for pattern in extra:
                 if pattern.search(value):
                     findings.append(
@@ -205,7 +207,7 @@ def audit_commit_metadata(repo: Path, extra: list[re.Pattern[str]]) -> list[Find
 
 def identity_inventory(repo: Path) -> dict[str, int]:
     counts: dict[str, int] = defaultdict(int)
-    for _sha, author, committer, _subject in _commit_metadata(repo):
+    for _sha, author, committer, _message in _commit_metadata(repo):
         counts[author] += 1
         if committer != author:
             counts[committer] += 1
