@@ -11,6 +11,9 @@ Standard dev commands (already documented in `README.md` / `pyproject.toml`):
 
 - Lint: `uv run ruff check .`
 - Tests: `uv run pytest`
+- Sensitive-content audit over the whole git history: `uv run python scripts/audit_history.py`
+ (add `--patterns-file .audit-patterns` for name/company keywords; that file is
+ git-ignored on purpose so the keywords never enter the repository)
 - Run the CLI: `uv run python -m laozhang_cli --input <request.json>`
   (examples live in `examples/`, e.g. `examples/request.json`, `examples/ppt.json`).
 
@@ -33,6 +36,11 @@ Non-obvious notes:
 - Upstream endpoints and the base URL are hard-coded in the adapters
   (`src/laozhang_cli/adapters/`); there is no env var to redirect them, so a real
   end-to-end generation needs the live api.laozhang.ai endpoint plus a valid key.
+- This repository is public. Never commit real API keys, and never commit local
+ environment details that identify a person (machine user names in
+ `C:\Users\<user>\` paths, corporate e-mail addresses). `tests/test_no_sensitive_content.py`
+ enforces this for the working tree; `scripts/audit_history.py` also covers old
+ history blobs, which only `git filter-repo` can actually clean.
 - Generated images default to `output/` (git-ignored). The bundled agent skill in
   `.codex/skills/generating-images-with-laozhang-cli/` is optional tooling and is
   covered by the same `uv run pytest` suite.

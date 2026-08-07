@@ -11,3 +11,5 @@ output/
 .worktrees/
 .DS_Store
 requests/
+# 本地敏感词清单，供 scripts/audit_history.py 使用；不入库以免关键词本身进入历史
+.audit-patterns

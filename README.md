@@ -371,6 +371,32 @@ cp .env.sample .env
 ```
 
 `.env` 已加入 `.gitignore`，请勿提交包含真实 Key 的配置文件。`.env.sample` 仅用于说明所需的环境变量，不应包含任何有效凭据。
+
+## 敏感信息审计
+
+仓库是公开的，因此提交内容里不应出现真实 API Key，也不应出现本机用户名、公司邮箱等个人环境信息。
+
+`tests/test_no_sensitive_content.py` 会在每次 `uv run pytest` 时扫描**当前工作树**中所有被 git 跟踪的文本文件，命中以下形态即失败：
+
+- `sk-` 开头的 API Key，以及 `*_KEY` / `*_TOKEN` / `*_SECRET` 后面跟着的高熵值（`your-real-api-key` 这类占位符不算）
+- 带真实用户名的家目录路径，例如 `C:\Users\<真实用户名>`、`/home/<真实用户名>`（`<user>`、`%USERNAME%` 等占位符不算）
+- 非示例域名的邮箱地址
+- 被跟踪的 `.env` 文件（只允许 `.env.sample`）
+
+`scripts/audit_history.py` 覆盖范围更大：它扫描**所有 ref 可达的全部历史 blob**，外加提交身份清单。
+
+```bash
+uv run python scripts/audit_history.py
+```
+
+需要按姓名、公司等关键词排查时，把关键词写进未跟踪的 `.audit-patterns`（每行一个正则，已在 `.gitignore` 中），避免关键词本身进入仓库历史：
+
+```bash
+uv run python scripts/audit_history.py --patterns-file .audit-patterns
+```
+
+脚本发现问题时退出码为 `1`。注意它扫描的是历史对象，所以旧提交里的内容只能通过 `git filter-repo` 重写历史才能真正清除——单纯在新提交里改掉文件不会让它变干净。
+
 ## 示例调用
 
 ### Nano Banana 2：直接使用内联 system prompt
