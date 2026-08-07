@@ -76,9 +76,28 @@ uv run python scripts/audit_history.py --patterns-file .audit-patterns
 
 ## 推送之后
 
-- 旧的提交对象在 GitHub 上仍可能通过 SHA 访问一段时间。要彻底移除缓存对象，需要联系
+- **`refs/pull/<N>/head` 不会被重写。** 这是 GitHub 托管的只读 ref，指向 PR 当时的 head
+ 提交，客户端既不能强推也不能删除。已合并/关闭的 PR 的这些 ref 会永久冻结在旧 SHA 上，
+ 因此旧提交仍然可以被取到：
+
+ ```bash
+ git clone --mirror <repo>                       # 会带上 refs/pull/*
+ git fetch origin '+refs/pull/*:refs/remotes/pr/*'
+ ```
+
+ 普通 `git clone` 不会拉取这些 ref，所以只影响刻意去取的人。要彻底移除只能联系
+ GitHub Support，或者删库重建（会丢失 PR、Issue、Star 等元数据）。
+ 验证时请区分 `refs/heads/*`（真实分支，已清理）和 `refs/pull/*`（残留）：
+
+ ```bash
+ git log $(git for-each-ref --format='%(refname)' refs/heads) --format='%an <%ae>' | sort -u
+ ```
+
+- 旧的提交对象在 GitHub 上仍可能通过 SHA 直接访问。要移除不可达的缓存对象，需要联系
  GitHub Support 请求 GC。
 - 已合并 PR 的页面会显示提交不再属于任何分支，这是重写历史的预期副作用。
+- 如果某个提交在重写后变成空提交（例如它做的正是本次替换的同一件事），`git filter-repo`
+ 会把它剪掉，分支上的提交数会少一个而文件树完全一致。这是正常现象。
 - 如果泄漏过真实 API Key，重写历史**不能**代替吊销：先在服务商侧作废旧 Key。
 - 之后由 `tests/test_no_sensitive_content.py` 在每次 `uv run pytest` 时守住工作树，
  防止同类内容再次进入历史。
