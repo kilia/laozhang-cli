@@ -395,7 +395,7 @@ uv run python scripts/audit_history.py
 uv run python scripts/audit_history.py --patterns-file .audit-patterns
 ```
 
-脚本发现问题时退出码为 `1`。注意它扫描的是历史对象，所以旧提交里的内容只能通过 `git filter-repo` 重写历史才能真正清除——单纯在新提交里改掉文件不会让它变干净。
+脚本发现问题时退出码为 `1`。注意它扫描的是历史对象，所以旧提交里的内容只能通过 `git filter-repo` 重写历史才能真正清除——单纯在新提交里改掉文件不会让它变干净。完整的重写步骤见 [`docs/history-sanitization.md`](docs/history-sanitization.md)。
 
 ## 示例调用
 
